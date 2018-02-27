@@ -11,7 +11,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "rbac_organization")
-@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 public class RbacOrganizationEntity implements Serializable {
     private int id;
     private Integer pid;
@@ -21,6 +20,7 @@ public class RbacOrganizationEntity implements Serializable {
     private Timestamp updateTime;
     private int version;
     private List<RbacUserEntity> users;
+    private List<RbacOrganizationEntity> childOrganizations;
 
     @Id
     @Column(name = "id")
@@ -33,7 +33,6 @@ public class RbacOrganizationEntity implements Serializable {
         this.id = id;
     }
 
-    @Basic
     @Column(name = "pid")
     public Integer getPid() {
         return pid;
@@ -43,7 +42,6 @@ public class RbacOrganizationEntity implements Serializable {
         this.pid = pid;
     }
 
-    @Basic
     @Column(name = "name")
     public String getName() {
         return name;
@@ -53,7 +51,6 @@ public class RbacOrganizationEntity implements Serializable {
         this.name = name;
     }
 
-    @Basic
     @Column(name = "description")
     public String getDescription() {
         return description;
@@ -64,7 +61,6 @@ public class RbacOrganizationEntity implements Serializable {
     }
 
     @CreationTimestamp
-    @Basic
     @Column(name = "add_time")
     public Timestamp getAddTime() {
         return addTime;
@@ -75,7 +71,6 @@ public class RbacOrganizationEntity implements Serializable {
     }
 
     @UpdateTimestamp
-    @Basic
     @Column(name = "update_time")
     public Timestamp getUpdateTime() {
         return updateTime;
@@ -95,12 +90,23 @@ public class RbacOrganizationEntity implements Serializable {
         this.version = version;
     }
 
-    @ManyToMany(cascade=CascadeType.ALL,fetch=FetchType.LAZY,mappedBy = "organizations")
+    @ManyToMany(fetch=FetchType.LAZY)
+    @JoinTable(name = "rbac_user_organization",joinColumns = @JoinColumn(name = "organization_id",referencedColumnName = "id"),inverseJoinColumns = @JoinColumn(name = "user_id",referencedColumnName = "id"))
     public List<RbacUserEntity> getUsers() {
         return users;
     }
 
     public void setUsers(List<RbacUserEntity> users) {
         this.users = users;
+    }
+
+    @OneToMany(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "pid")
+    public List<RbacOrganizationEntity> getChildOrganizations() {
+        return childOrganizations;
+    }
+
+    public void setChildOrganizations(List<RbacOrganizationEntity> childOrganizations) {
+        this.childOrganizations = childOrganizations;
     }
 }
