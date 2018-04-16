@@ -1,40 +1,38 @@
 package cn.jbone.common.service;
 
 
-import cn.jbone.common.service.bo.SearchListBO;
+import cn.jbone.common.api.dto.SearchListDTO;
+import cn.jbone.common.utils.DateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class AbstractService<T> {
-    private final String EQUAL = "EQUAL";
-    private final String NOT_EQUAL = "NOTEQUAL";
-    private final String LESS_THAN = "LESSTHAN";
-    private final String LESS_THAN_OR_EQUAL = "LESSTHANOREQUAL";
-    private final String GREATER_THAN = "GREATERTHAN";
-    private final String GREATER_THAN_OR_EQUAL = "GREATERTHANOREQUAL";
+    private final String EQUAL = "EQ";
+    private final String NOT_EQUAL = "NEQ";
+    private final String LESS_THAN = "LT";
+    private final String LESS_THAN_OR_EQUAL = "LTOE";
+    private final String GREATER_THAN = "GT";
+    private final String GREATER_THAN_OR_EQUAL = "GTOE";
     private final String LIKE = "LIKE";
     private final String SEARCH_PREFIX = "S_";
 
     /**
      * 获取搜索列表的通用Specification
      * key=S_filedName_pattern
-     * @param searchListBO
+     * @param searchListDTO
      * @return
      */
-    public Specification<T> getSearchListSpecification(SearchListBO searchListBO){
+    public Specification<T> getSearchListSpecification(SearchListDTO searchListDTO){
         return new Specification<T>() {
             @Override
             public Predicate toPredicate(Root<T> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
 
-                Map<String,Object> condition = searchListBO.getCondition();
+                Map<String,Object> condition = searchListDTO.getCondition();
                 if(condition == null || condition.isEmpty()){
                     return criteriaQuery.getRestriction();
                 }
@@ -60,12 +58,24 @@ public class AbstractService<T> {
                         continue;
                     }
                     //基本数字类型且小于0，不作为查询条件
-                    if(root.get(filedName).getJavaType().isPrimitive() && ((long) condition.get(filedName)) < 0){
+                    if(root.get(filedName).getJavaType().isPrimitive() && (Long.parseLong(condition.get(key).toString())) < 0){
                         continue;
+                    }
+
+                    //如果是日期类型，需要做下转换
+                    boolean isDate = false;
+                    if (!root.get(filedName).getJavaType().isPrimitive()){
+                        String typeName = root.get(filedName).getJavaType().getName();
+                        if(typeName.equalsIgnoreCase("java.sql.Timestamp") || typeName.equalsIgnoreCase("java.util.Date")){
+                            isDate = true;
+                        }
                     }
 
                     Path<Comparable> expression = root.get(filedName);
                     Comparable value = (Comparable)condition.get(key);
+                    if(isDate){
+                        value = DateUtil.getDate(value.toString());
+                    }
 
                     if(EQUAL.equalsIgnoreCase(pattern)){
                         predicates.add(criteriaBuilder.equal(expression,value));
@@ -99,15 +109,15 @@ public class AbstractService<T> {
 
     /**
      * 获取分页请求对象
-     * @param searchListBO
+     * @param searchListDTO
      * @return
      */
-    public PageRequest getPageRequest(SearchListBO searchListBO){
+    public PageRequest getPageRequest(SearchListDTO searchListDTO){
         PageRequest pageRequest = null;
-        if(StringUtils.isNotBlank(searchListBO.getSortName())){
-            pageRequest = new PageRequest(searchListBO.getPageNumber()-1,searchListBO.getPageSize(),Sort.Direction.fromString(searchListBO.getSortOrder()),searchListBO.getSortName());
+        if(StringUtils.isNotBlank(searchListDTO.getSortName())){
+            pageRequest = new PageRequest(searchListDTO.getPageNumber()-1,searchListDTO.getPageSize(),Sort.Direction.fromString(searchListDTO.getSortOrder()),searchListDTO.getSortName());
         }else {
-            pageRequest = new PageRequest(searchListBO.getPageNumber()-1,searchListBO.getPageSize());
+            pageRequest = new PageRequest(searchListDTO.getPageNumber()-1,searchListDTO.getPageSize());
         }
         return pageRequest;
     }
