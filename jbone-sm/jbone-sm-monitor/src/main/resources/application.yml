@@ -34,6 +34,8 @@ zipkin:
 server:
   port: 10003
 
+turbine.stream.port: 10004
+
 # 注册中心配置
 eureka:
   client:
@@ -50,6 +52,12 @@ management:
   security:
     enabled: false
 
+# 配置Eureka中的serviceId列表，表明监控哪些服务
+#turbine.appConfig: jbone-sys-admin,jbone-sys-server,jbone-tag-admin,jbone-cas,jbone-cas-manager,jbone-sm-monitor
+#指定聚合哪些集群，多个使用","分割，默认为default
+#turbine.aggregator.clusterConfig: default
+#clusterNameExpression指定集群名称，默认表达式appName；此时：turbine.aggregator.clusterConfig需要配置想要监控的应用名称；2. 当clusterNameExpression: default时，turbine.aggregator.clusterConfig可以不写，因为默认就是default
+#turbine.clusterNameExpression: new String("default")
 
 
 jbone:
@@ -66,6 +74,29 @@ jbone:
     unauthorizedUrl: /403
     #权限过滤规则
     filterChainDefinition:
+      /health: anon
+      /archaius: anon
+      /refresh: anon
+      /configprops: anon
+      /env/**: anon
+      /service-registry/**: anon
+      /auditevents: anon
+      /pause: anon
+      /dump: anon
+      /loggers/**: anon
+      /resume: anon
+      /metrics/**: anon
+      /channels: anon
+      /beans: anon
+      /mappings: anon
+      /autoconfig: anon
+      /trace: anon
+      /hystrix.stream/**: anon
+      /info: anon
+      /restart: anon
+      /heapdump: anon
+      /features: anon
+      /turbine.stream: anon
       /zipkin/**: authc,roles[serverAdministrator]
       /**: anon
       /login: anon
@@ -92,4 +123,15 @@ info:
     url: https://gitee.com/majunwei2017/jbone
   domain: http://www.majunwei.com
 
-
+# 启用超时设置
+hystrix.command.default.execution.timeout.enabled: true
+# 熔断时间为10S
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 10000
+# 使用线程隔离熔断
+hystrix.command.default.execution.isolation.strategy: THREAD
+# 核心线程数100
+hystrix.threadpool.default.coreSize: 100
+# 超时时熔断
+hystrix.command.default.execution.isolation.thread.interruptOnTimeout: true
+# 取消时是否熔断
+hystrix.command.default.execution.isolation.thread.interruptOnCancel: false
