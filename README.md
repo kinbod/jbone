@@ -99,13 +99,13 @@ Mysql | 对象关系数据库 | [https://www.mysql.com/](https://www.mysql.com/)
 ### 定制登录认证页面
 考虑到不同系统可能有显示不同风格的登录页面，后端支持配置系统登录皮肤（登录皮肤需要自己开发），也可使用默认视图。
 
-默认视图加载系统的名字和描述信息，以下为登录服务管理系统的视图：
+默认视图加载系统的名字和描述信息，以下为登录服务管理系统的视图（登录不同系统会切换视图的展现）：
 ![CAS登录](doc/loginview.png)
 ## Jbone SM Admin(服务管理中心)
 ### 实现方式
 集成Spring Boot Admin 、Spring Cloud Hystrix，完成服务和JVM的监控
 ### 进入方式
-http://jbone-sm-admin.majunwei.com:100002/admin,调入CAS认证中心，输入jbone／jbone，即可进入
+浏览器输入：http://jbone-sm-admin.majunwei.com:100002/admin,跳转至CAS认证中心，输入jbone／jbone，即可进入
 ### 功能简介
 篇幅有限，简单介绍下：
 
@@ -284,7 +284,34 @@ set keystoreJDKPath="C:\devSpace\Java\jdk1.8.0_131\jre\lib\security\cacerts "
 ![Spring Boot架构图](doc/diagram-boot-reactor.png)
 ## Spring Cloud架构图
 ![Spring Cloud架构图](doc/diagram-distributed-systems.png)
+## Spring Cloud学习资料
+[深入理解Spring Cloud - Spring Cloud Netflix Eureka](http://majunwei.com/view/201808130810451238.html)
+
+[深入理解Eureka-Eureka架构综述](http://www.majunwei.com/view/201808130819216747.html)
+
+[深入理解Eureka-Eureka数据结构](http://www.majunwei.com/view/201808130944142253.html)
+
+[深入理解Eureka-Eureka Register机制](http://www.majunwei.com/view/201808130936271290.html)
+
+[深入理解Eureka-Eureka Renew机制](http://www.majunwei.com/view/201808130925153632.html)
+
+[深入理解Eureka-Eureka Cancel机制](http://www.majunwei.com/view/201808130912315418.html)
+
+[深入理解Eureka-Eureka Evict机制](http://www.majunwei.com/view/201808130902525688.html)
+
+[深入理解Eureka-Eureka Server缓存机制](http://www.majunwei.com/view/201808131007529750.html)
+
+[深入理解Eureka-Eureka Server节点复制机制](http://www.majunwei.com/view/201808130854525492.html)
+
+[深入理解Eureka-Eureka Client获取注册信息机制](http://www.majunwei.com/view/201808131001085867.html)
+
+[深入理解Eureka-Eureka Server自我保护机制](http://www.majunwei.com/view/201808131015366640.html)
+
+[深入理解Eureka-Eureka Region Zone](http://www.majunwei.com/view/201808130953353185.html)
+
+[深入理解Eureka-Eureka配置列表](http://www.majunwei.com/view/201808130827002632.html)
 ## CAS认证过程
 ![CAS认证过程](doc/cas_protocol.jpg)
+
 
 
